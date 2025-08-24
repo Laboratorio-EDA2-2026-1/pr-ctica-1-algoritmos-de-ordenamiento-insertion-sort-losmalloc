@@ -1,3 +1,10 @@
+/* 
+    PRÁCTICA 1
+    EQUIPO: LOS MALLOC
+    EDA II
+    GRUPO 01
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -20,10 +27,80 @@
  * - NO cambies la firma de sort_matrix().
  */
 
+// Función para imprimir la matriz e ir viendo el procedimiento
+void print_matrix(int **matrix, int n){
+    for (int i = 0; i < n; i++){
+        for (int j = 0; j < n; j++){
+            printf("%d ", matrix[i][j]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+
+// Función que va a permitir el intercambio de columnas completas
+void cambio_columnas(int **matrix, int n, int a, int b, int ren){
+    // n es para el tamaño de la matriz, a y b son las dos columnas a intercambiar
+    for (int i = ren; i < n; i++) { // i es para recorrer cada renglón de la matriz
+        int key = matrix[i][a]; // key es la variable temporal
+        matrix[i][a] = matrix[i][b]; // cambio de valores
+        matrix[i][b] = key; // regresamos el valor del temporal
+    }
+}
+
+// Función para ordenar los renglones siguiendo la regla de mover la columna
+void sort_renglones(int **matrix, int n){
+    for (int ren = 0; ren < n; ren++){  // recorre cada renglón
+       for (int col = 1; col < n; col++){   //empieza en el segundo elemento
+            int comp = col - 1;     //compara el elemento anterior
+            while (comp >= 0 && matrix[ren][comp] > matrix[ren][comp + 1]){
+                cambio_columnas(matrix, n, comp, comp + 1, ren);
+                comp--;
+            }
+       }
+        printf("Después de ordenar el renglón %d:\n", ren + 1);
+        print_matrix(matrix, n);
+    }
+}
+
+// Transpone la matriz para después ordenarla de nuevo
+void matriz_transpuesta(int **matrix, int n){
+    for (int ren = 0; ren < n; ren++){
+        for (int col = ren + 1; col < n; col++){ // solo recorrer la parte superior
+            int temp = matrix[ren][col];
+            matrix[ren][col] = matrix[col][ren];
+            matrix[col][ren] = temp;
+        }
+    }
+    printf("Matriz transpuesta\n");
+    print_matrix(matrix, n);
+}
+
+// Función que compara si hay valores menores en otros renglones
+void intercambio(int **matrix, int n){
+    for (int ren = 0; ren < n - 1; ren++){  // recorre cada renglón
+        int ultimo = matrix[ren][n - 1]; // último del renglón
+        int primero = matrix[ren + 1][0];  // primero del siguiente renglón
+        if (primero < ultimo){
+            // intercambiar
+            int temp = matrix[ren][n - 1];
+            matrix[ren][n - 1] = matrix[ren + 1][0];
+            matrix[ren + 1][0] = temp;
+            printf("Matriz con valores intercambiados:\n\n");
+            print_matrix(matrix, n);
+            sort_renglones(matrix, n);
+        }
+    }
+}
 void sort_matrix(int **matrix, int n) {
     // TODO: Implementa aquí el algoritmo.
     // Necesitarás el método de inserción,
     // pero recuerda aplicar la regla de mover toda la columna.
+    
+    sort_renglones(matrix, n);
+    matriz_transpuesta(matrix, n);
+    sort_renglones(matrix, n);
+    intercambio(matrix, n);
 }
 
 int main() {
